@@ -19,14 +19,11 @@ export const ChartsProvider = ({ children }) => {
 			// get all Charts from server API
 			let promises = [
 				API.request({ url: "liquidity/v2/historical/chart", type: "get" }),
-				API.request({ url: "volume/v1/historical/chart", type: "get" }),
-				API.request({ url: "volume/v1/actual", type: "get" }),
-				API.request({ url: "liquidity/v1/actual", type: "get" }),
+				API.request({ url: "volume/v2/historical/chart", type: "get" }),
 			]
 			let results = await Promise.all(promises)
 			let liquidity = results[0].data
 			let volume = results[1].data
-			volume.push(results[2].data)
 			setLoadingData(false)
 			setDataLiquidityD(liquidity)
 			setDataVolumeD(volume)

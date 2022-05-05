@@ -15,6 +15,8 @@ import { useCallback } from "react"
 import { usePoolsV2 } from "../../../contexts/PoolsV2.provider"
 import BlocLoaderOsmosis from "../../../components/loader/BlocLoaderOsmosis"
 import TrxTable from "./trxTable/trxTable"
+import { useSettings } from "../../../contexts/SettingsProvider"
+import { useToast } from "../../../contexts/Toast.provider"
 
 const useStyles = makeStyles((theme) => {
 	return {
@@ -23,7 +25,6 @@ const useStyles = makeStyles((theme) => {
 			display: "grid",
 			gridAutoRows: "auto",
 			rowGap: theme.spacing(2),
-			
 		},
 
 		charts: {
@@ -92,9 +93,10 @@ const useStyles = makeStyles((theme) => {
 	}
 })
 
-const Pool = ({ showToast }) => {
+const Pool = () => {
 	const classes = useStyles()
 	const history = useHistory()
+	const { showToast } = useToast()
 	const { id } = useParams()
 	const {
 		pools,
@@ -105,9 +107,11 @@ const Pool = ({ showToast }) => {
 		getLiquidityChartPool,
 		getTrxPool,
 		loadingTrx,
+		allPools,
 	} = usePoolsV2()
 
 	//save data here to avoid to re fetching data if is already fetched
+	const { settings, updateSettings } = useSettings()
 	const [pool, setPool] = useState({})
 	const [tokens, setTokens] = useState([])
 	const [selectedTokens, setSelectedTokens] = useState({ one: {}, two: {} })
@@ -140,18 +144,32 @@ const Pool = ({ showToast }) => {
 		if (!id) {
 			showToast({
 				severity: "warning",
-				text: "Pool not find, you are redirected to pools page.",
+				text: "Pool not found, you are redirected to pools page.",
 			})
 			history.push("/pools")
 		} else {
 			if (pools.length > 0) {
-				let indexPool = getInclude(pools, (pool) => pool.id === id)
+				let indexPool = getInclude(allPools, (pool) => pool.id === id)
 				if (indexPool >= 0) {
-					setPool({ ...pools[indexPool] })
+					let currentPool = allPools[indexPool]
+					if (currentPool.main && settings.type === "frontier") {
+						updateSettings({ type: "app" })
+						showToast({
+							severity: "info",
+							text: "You are redirected to main because the pool does not exist on frontier.",
+						})
+					} else if (!currentPool.main && settings.type === "app") {
+						updateSettings({ type: "frontier" })
+						showToast({
+							severity: "info",
+							text: "You are redirected to frontier because the pool does not exist on main.",
+						})
+					}
+					setPool(currentPool)
 				} else {
 					showToast({
 						severity: "warning",
-						text: "Pool not find, you are redirected to pools page.",
+						text: "Pool not found, you are redirected to pools page.",
 					})
 					history.push("/pools")
 				}

@@ -1,14 +1,22 @@
 import { makeStyles } from "@material-ui/core"
 import { useEffect, useState } from "react"
 import { Link, useHistory, useLocation } from "react-router-dom"
+import ButtonConnection from "./button_connection"
 import logo from "./logo.png"
 import Search from "./Search"
+import Toggle from "../toggle/Toggle"
+import ToggleItem from "../toggle/ToggleItem"
+import SelectDashboard from "./selectDashboard/select_dashboard"
+import { useDashboard } from "../../contexts/dashboard.provider"
+import ButtonOsmo from "../../features/dashboard/button_osmo"
+import { formaterNumber } from "../../helpers/helpers"
+
 const useStyles = makeStyles((theme) => {
 	return {
 		appBarDesktopRoot: {
 			position: "fixed",
 			marginTop: "40px",
-			zIndex: theme.zIndex.appBar-2,
+			zIndex: theme.zIndex.appBar - 2,
 		},
 		appBarDesktopContent: {
 			position: "relative",
@@ -47,6 +55,9 @@ const useStyles = makeStyles((theme) => {
 		},
 		right: {
 			zIndex: theme.zIndex.appBar,
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
 			[theme.breakpoints.down("sm")]: {
 				width: "100%",
 			},
@@ -55,6 +66,9 @@ const useStyles = makeStyles((theme) => {
 		menu: {
 			margin: `${theme.spacing(3)}px ${theme.spacing(3)}px ${theme.spacing(3)}px ${theme.spacing(2)}px`,
 			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+
 			flexWrap: "wrap",
 			[theme.breakpoints.down("sm")]: {
 				margin: `${theme.spacing(3)}px ${theme.spacing(3)}px ${theme.spacing(1)}px ${theme.spacing(4)}px`,
@@ -62,8 +76,9 @@ const useStyles = makeStyles((theme) => {
 		},
 		menuItem: {
 			color: theme.palette.gray.dark,
-			margin: theme.spacing(1),
-			padding: theme.spacing(1),
+			padding: "4px 8px",
+			margin: "0px 4px",
+			verticalAlign: "middle",
 			textDecoration: "none",
 			transition: "all 0.2s",
 			zIndex: theme.zIndex.appBar,
@@ -74,22 +89,39 @@ const useStyles = makeStyles((theme) => {
 		menuItemActive: {
 			color: theme.palette.gray.contrastText,
 			backgroundColor: theme.palette.primary.light,
-			margin: theme.spacing(1),
-			padding: theme.spacing(1),
 			borderRadius: theme.spacing(1),
 		},
+		toggle: { marginLeft: "12px" },
 	}
 })
 
-const AppBarDesktop = () => {
+const AppBarDesktop = ({ type, onChangeType }) => {
 	const classes = useStyles()
 	const history = useHistory()
 	let location = useLocation()
 	const [currentPath, setCurrentPath] = useState("/")
+	const { address, getWalletInfo } = useDashboard()
+	const [osmo, setOsmo] = useState(0)
 
 	useEffect(() => {
 		setCurrentPath(location.pathname)
 	}, [location.pathname, setCurrentPath])
+
+	useEffect(() => {
+		const fetch = async () => {
+			let { balance } = await getWalletInfo({ address })
+			let osmos = 0
+			let walletOsmo = balance.wallet.find((item) => item.symbol === "OSMO")
+			if(walletOsmo){
+				osmos = walletOsmo.amount
+			}
+			setOsmo(formaterNumber(osmos))
+		}
+		if (address && address.length > 0) {
+			fetch()
+		}
+	}, [address])
+
 	return (
 		<div className={classes.appBarDesktopRoot}>
 			<div className={classes.appBarDesktopContent}>
@@ -127,9 +159,16 @@ const AppBarDesktop = () => {
 						>
 							IBC Status
 						</Link>
+						<SelectDashboard />
 					</div>
 				</div>
 				<div className={classes.right}>
+					{address && address.length > 0 && <ButtonOsmo address={address} osmo={osmo} />}
+					<Toggle color="primary" value={type} exclusive onChange={onChangeType}>
+						<ToggleItem value="app">App</ToggleItem>
+						<ToggleItem value="frontier">Frontier</ToggleItem>
+					</Toggle>
+					<ButtonConnection />
 					<Search />
 				</div>
 			</div>

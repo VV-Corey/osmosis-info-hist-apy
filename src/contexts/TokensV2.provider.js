@@ -1,16 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react"
 import API from "../helpers/API"
 import { getWeekNumber, timeToDateUTC } from "../helpers/helpers"
+import { useSettings } from "./SettingsProvider"
 const TokensV2Context = createContext()
 
 export const useTokensV2 = () => useContext(TokensV2Context)
 
 export const TokensV2Provider = ({ children }) => {
 	const [tokens, setTokens] = useState([])
+	const [allTokens, setAllTokens] = useState([])
 	const saveDataChart = useRef({})
 	const [loadingTokens, setLoadingTokens] = useState(true)
 	const [loadingCharts, setLoadingCharts] = useState(true)
 	const [loadingToken, setLoadingToken] = useState(true)
+	const { settings } = useSettings()
 
 	const getName = (chartType, tf = "-", symbol = "-") => {
 		return chartType + "-" + tf + "-" + symbol
@@ -168,31 +171,40 @@ export const TokensV2Provider = ({ children }) => {
 		let fetch = async () => {
 			setLoadingTokens(true)
 			let response = await API.request({ url: "tokens/v2/all", type: "get" })
-			response.data.sort((a, b) => {
+			let data = response.data
+
+			data.sort((a, b) => {
 				if (a.liquidity > b.liquidity) return -1
 				if (a.liquidity < b.liquidity) return 1
 				return 0
 			})
-			setTokens(
-				response.data.map((row, index) => {
-					return {
-						id: index + 1,
-						denom: row.denom,
-						price: row.price,
-						symbol: row.symbol,
-						liquidity: row.liquidity,
-						liquidity24hChange: row.liquidity_24h_change,
-						volume24h: row.volume_24h,
-						volume24hChange: row.volume_24h_change,
-						name: row.name,
-						price24hChange: row.price_24h_change,
-					}
-				})
-			)
+
+			data = data.map((row, index) => {
+				return {
+					id: index + 1,
+					denom: row.denom,
+					price: row.price,
+					symbol: row.symbol,
+					liquidity: row.liquidity,
+					liquidity24hChange: row.liquidity_24h_change,
+					volume24h: row.volume_24h,
+					volume24hChange: row.volume_24h_change,
+					name: row.name,
+					main: row.main,
+					price24hChange: row.price_24h_change,
+				}
+			})
+			setAllTokens(data)
+			if (settings.type === "app") {
+				data = data.filter((item) => item.main)
+			} else {
+				data = data.filter((item) => !item.main)
+			}
+			setTokens(data)
 			setLoadingTokens(false)
 		}
 		fetch()
-	}, [])
+	}, [settings.type])
 
 	return (
 		<TokensV2Context.Provider
@@ -204,7 +216,8 @@ export const TokensV2Provider = ({ children }) => {
 				loadingTokens,
 				getTokenData,
 				loadingToken,
-				loadingCharts
+				loadingCharts,
+				allTokens,
 			}}
 		>
 			{children}

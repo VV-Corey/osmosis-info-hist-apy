@@ -7,6 +7,10 @@ import MenuIcon from "@material-ui/icons/Menu"
 import CloseIcon from "@material-ui/icons/Close"
 import PaperDialog from "./PaperDialog"
 
+import Toggle from "../toggle/Toggle"
+import ToggleItem from "../toggle/ToggleItem"
+import SelectDashboard from "./selectDashboard/select_dashboard"
+
 const useStyles = makeStyles((theme) => {
 	return {
 		appBarMobileRoot: {
@@ -63,6 +67,13 @@ const useStyles = makeStyles((theme) => {
 		iconMenu: {
 			zIndex: theme.zIndex.appBar,
 		},
+		center: {
+			margin: theme.spacing(1),
+			padding: theme.spacing(1),
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+		},
 	}
 })
 
@@ -70,7 +81,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />
 })
 
-const AppBarMobile = () => {
+const AppBarMobile = ({ type, onChangeType }) => {
 	const classes = useStyles()
 	const history = useHistory()
 	let location = useLocation()
@@ -92,6 +103,11 @@ const AppBarMobile = () => {
 		history.push(path)
 		handleClose()
 	}
+
+	const callback = () => {
+		handleClose()
+
+	}
 	return (
 		<div className={classes.appBarMobileRoot}>
 			<div className={classes.appBarMobileContent}>
@@ -105,6 +121,7 @@ const AppBarMobile = () => {
 				/>
 				<Dialog
 					fullScreen
+					disableEnforceFocus
 					open={open}
 					onClose={handleClose}
 					className={classes.dialog}
@@ -162,6 +179,15 @@ const AppBarMobile = () => {
 								IBC Status
 							</p>
 						</div>
+
+
+						<div className={classes.center}>
+							<Toggle color="primary" value={type} exclusive onChange={onChangeType}>
+								<ToggleItem value="app">App</ToggleItem>
+								<ToggleItem value="frontier">Frontier</ToggleItem>
+							</Toggle>
+						</div>
+
 						<div className={`${classes.menuItem} ${classes.menuItemClose}`}>
 							<IconButton aria-label="Close menu" onClick={handleClose}>
 								<CloseIcon />
