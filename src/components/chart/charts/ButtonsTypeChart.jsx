@@ -37,6 +37,13 @@ const ButtonsTypeChart = ({ onChangeType, type }) => {
 						onChangeType("liquidity")
 					},
 				},
+				{
+					id: "hist",
+					name: "Historical APR",
+					onClick: () => {
+						onChangeType("hist")
+					},
+				},
 			]}
 			active={type}
 		/>
