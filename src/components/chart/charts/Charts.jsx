@@ -59,7 +59,12 @@ const Charts = ({
 				key={"ChartVolume" + rangeVolume}
 			/>
 		)
-	} else {
+	}  else if (typeChart === "apr") {
+		chartRender = (
+			<ChartPrice data={dataPrice} crossMove={crossMove} onMouseLeave={onMouseLeave} key={"ChartPrice" + rangePrice} />
+		)
+	}
+	else {
 		chartRender = (
 			<ChartLiquidity
 				data={dataLiquidity}

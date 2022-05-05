@@ -23,7 +23,9 @@ const ButtonsCharts = ({
 		}
 	} else if (typeChart === "volume") {
 		return <ButtonsVolume onChangeRange={onChangeRangeVolume} range={rangeVolume} />
-	} else {
+	} else if (typeChart === "apr") {
+			return <ButtonsPrice onChangeRange={onChangeRangePrice} range={rangePrice} />
+	}else {
 		return <ButtonsLiquidity onChangeRange={onChangeRangeLiquidity} range={rangeLiquidity} />
 	}
 }

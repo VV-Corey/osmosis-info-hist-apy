@@ -7,7 +7,10 @@ const InfoCharts = ({ data, rangePrice, rangeVolume, rangeLiquidity, typeChart, 
 		return <InfoPrice data={data} range={rangePrice} currency={currency}/>
 	} else if (typeChart === "volume") {
 		return <InfoVolume data={data} range={rangeVolume}/>
-	} else {
+	} else if (typeChart === "apr") {
+		return <InfoPrice data={data} range={rangePrice} currency={currency}/>
+	}
+	 else {
 		return <InfoLiquidity data={data} range={rangeLiquidity} />
 	}
 }

@@ -38,10 +38,10 @@ const ButtonsTypeChart = ({ onChangeType, type }) => {
 					},
 				},
 				{
-					id: "hist",
+					id: "apr",
 					name: "Historical APR",
 					onClick: () => {
-						onChangeType("hist")
+						onChangeType("apr")
 					},
 				},
 			]}
