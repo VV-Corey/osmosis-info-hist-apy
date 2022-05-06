@@ -63,18 +63,18 @@ const Charts = ({
 			/>
 		)
 	}  else if (typeChart === "apr") {
-		//console.log(dataPrice)
-		console.log(dataAPR)
+		
 		chartRender = (
 			<ChartAPR
-				data={dataLiquidity}
+				data={dataAPR}
 				crossMove={crossMove}
 				onMouseLeave={onMouseLeave}
-				key={"ChartLiquidity" + rangeLiquidity}
+				key={"ChartAPR" + rangeAPR}
 			/>
 		)
 	}
 	else {
+		console.log(rangeLiquidity)
 		chartRender = (
 			<ChartLiquidity
 				data={dataLiquidity}

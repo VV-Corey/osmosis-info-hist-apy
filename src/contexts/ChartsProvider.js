@@ -100,46 +100,7 @@ export const ChartsProvider = ({ children }) => {
 			setDataLiquidityM(liquidityM)
 			setDataLiquidityW(liquidityW)
 
-			// Aggregate by week and month for APR, adjust for changed API before deploying
-
-			let aprW = []
-			currentWeek = { time: apr[0].time, value: 0, value_atom: 0, value_osmo: 0 }
-			let aprM = []
-			currentMonth = { time: apr[0].time, value: 0, value_atom: 0, value_osmo: 0 }
-			apr.forEach((item) => {
-				let currentDate = timeToDateUTC(item.time)
-				let dateMonth = timeToDateUTC(currentMonth.time)
-				if (currentDate.getMonth() === dateMonth.getMonth()) {
-					currentMonth.value = item.value
-					currentMonth.value_atom = item.value_atom
-					currentMonth.value_osmo = item.value_osmo
-				} else {
-					aprM.push(currentMonth)
-					currentMonth = {
-						time: item.time,
-						value: item.value,
-						value_atom: item.value_atom,
-						value_osmo: item.value_osmo,
-					}
-				}
-				let dateOfCurrentWeek = timeToDateUTC(currentWeek.time)
-				let numberOfWeek = getWeekNumber(currentDate)
-				let numberOfWeekOfCurrentWeek = getWeekNumber(dateOfCurrentWeek)
-				if (numberOfWeek === numberOfWeekOfCurrentWeek) {
-					currentWeek.value = item.value
-					currentWeek.value_atom = item.value_atom
-					currentWeek.value_osmo = item.value_osmo
-				} else {
-					aprW.push(currentWeek)
-					currentWeek = { time: item.time, value: item.value, value_atom: item.value_atom, value_osmo: item.value_osmo }
-				}
-			})
-			aprW.push(currentWeek)
-			aprM.push(currentMonth)
-			setDataAPRM(aprM)
-			setDataAPRW(aprW)
-			console.log(aprM)
-			console.log(liquidityM)
+			
 		}
 
 

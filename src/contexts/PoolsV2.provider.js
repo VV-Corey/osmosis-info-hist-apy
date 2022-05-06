@@ -217,6 +217,7 @@ export const PoolsV2Provider = ({ children }) => {
 
 	const getLiquidityChartPool = useCallback(async ({ poolId, range = "d" }) => {
 		setLoadingPoolChart(true)
+	
 		if (
 			saveDataChart.current[getName("liquidity", range, poolId)] &&
 			saveDataChart.current[getName("liquidity", range, poolId)].length > 0
@@ -229,7 +230,6 @@ export const PoolsV2Provider = ({ children }) => {
 				type: "get",
 			})
 			let data = response.data
-
 			let dataW = []
 			let currentWeek = { time: data[0].time, value: 0 }
 			let dataM = []
@@ -276,7 +276,7 @@ export const PoolsV2Provider = ({ children }) => {
 			return saveDataChart.current[getName("apr", range, poolId)]
 		} else {
 			let response = await API.request({
-				url: `supply/v1/osmo`,
+				url: `pools/v2/liquidity/${poolId}/chart`,
 				type: "get",
 			})
 			let data = response.data
@@ -306,7 +306,6 @@ export const PoolsV2Provider = ({ children }) => {
 			})
 			dataW.push(currentWeek)
 			dataM.push(currentMonth)
-
 			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "d", poolId)]: data }
 			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "w", poolId)]: dataW }
 			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "m", poolId)]: dataM }

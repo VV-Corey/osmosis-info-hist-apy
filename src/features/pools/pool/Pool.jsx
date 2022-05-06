@@ -105,6 +105,7 @@ const Pool = () => {
 		getChartPool,
 		getVolumeChartPool,
 		getLiquidityChartPool,
+		getAPRChartPool,
 		getTrxPool,
 		loadingTrx,
 		allPools,
@@ -133,10 +134,12 @@ const Pool = () => {
 	const [rangePrice, setRangePrice] = useState("7d") // 7d, 1m, 1y, all
 	const [rangeVolume, setRangeVolume] = useState("d") // d, w, m
 	const [rangeLiquidity, setRangeLiquidity] = useState("d") // d, w, m
+	const [rangeAPR, setRangeAPR] = useState("d")
 
 	const [currentDataPrice, setCurrentDataPrice] = useState([])
 	const [currentDataVolume, setCurrentDataVolume] = useState([])
 	const [currentDataLiquidity, setCurrentDataLiquidity] = useState([])
+	const [currentDataAPR, setCurrentDataAPR] = useState([])
 	const [currency, setCurrency] = useState({ before: true, value: "$" })
 
 	useEffect(() => {
@@ -254,6 +257,10 @@ const Pool = () => {
 			if (currentDataLiquidity.length > 0) {
 				setCurrentItem(currentDataLiquidity[currentDataLiquidity.length - 1])
 			}
+		} else if (typeChart === "apr") {
+			if (currentDataAPR.length > 0) {
+				setCurrentItem(currentDataAPR[currentDataAPR.length - 1])
+			}
 		} else if (typeChart === "price") {
 			if (currentDataPrice.length > 0) {
 				let lastItem = currentDataPrice[currentDataPrice.length - 1]
@@ -311,6 +318,20 @@ const Pool = () => {
 		}
 	}
 
+	const onChangeRangeAPR = async (value) => {
+		try {
+			setLoadingDataChart(true)
+			let data = await getAPRChartPool({ poolId: pool.id, range: value })
+			setCurrentDataAPR(data)
+			setCurrentItem(data[data.length - 1])
+			setRangeAPR(value)
+			setLoadingDataChart(false)
+		} catch (e) {
+			console.log("%cContainerCharts.jsx -> 124 ERROR: e", "background: #FF0000; color:#FFFFFF", e)
+			setLoadingDataChart(false)
+		}
+	}
+
 	const onChangeRangePrice = async (value, denomIn, denomOut, cb) => {
 		try {
 			setLoadingDataChart(true)
@@ -337,6 +358,8 @@ const Pool = () => {
 			onChangeRangePrice(rangePrice)
 		} else if (value === "volume") {
 			onChangeRangeVolume(rangeVolume)
+		} else if (value === "apr") {
+			onChangeRangeAPR(rangeAPR)
 		} else if (value === "liquidity") {
 			onChangeRangeLiquidity(rangeLiquidity)
 		}
@@ -372,6 +395,7 @@ const Pool = () => {
 							<InfoCharts
 								data={currentItem}
 								typeChart={typeChart}
+								rangeAPR={rangeAPR}
 								rangeLiquidity={rangeLiquidity}
 								rangeVolume={rangeVolume}
 								rangePrice={rangePrice}
@@ -382,8 +406,10 @@ const Pool = () => {
 								<ButtonsCharts
 									typeChart={typeChart}
 									onChangeRangeLiquidity={onChangeRangeLiquidity}
+									onChangeRangeAPR={onChangeRangeAPR}
 									onChangeRangePrice={onChangeRangePrice}
 									onChangeRangeVolume={onChangeRangeVolume}
+									rangeAPR={rangeAPR}
 									rangeLiquidity={rangeLiquidity}
 									rangeVolume={rangeVolume}
 									rangePrice={rangePrice}
@@ -396,10 +422,12 @@ const Pool = () => {
 								dataPrice={currentDataPrice}
 								dataVolume={currentDataVolume}
 								dataLiquidity={currentDataLiquidity}
+								dataAPR={currentDataAPR}
 								crossMove={crossMove}
 								onMouseLeave={onMouseLeave}
 								onClick={onClick}
 								typeChart={typeChart}
+								rangeAPR={rangeAPR}
 								rangeLiquidity={rangeLiquidity}
 								rangeVolume={rangeVolume}
 								rangePrice={rangePrice}
