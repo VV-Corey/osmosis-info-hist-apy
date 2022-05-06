@@ -51,11 +51,14 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 	useEffect(() => {
 		// Initialization
 		if (chartRef.current === null) {
+			console.log("hi")
 			let chart = createChart(containerRef.current, {
+				
 				layout: {
-					backgroundColor: "rgba(31, 33, 40,0)",
+					backgroundColor: "rgba(115, 33, 40,1)",
 					textColor: "#c3c5cb",
 					fontFamily: "'Inter'",
+					
 				},
 				localization: {
 					priceFormatter: (price) => {
@@ -82,7 +85,7 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 			})
 
 		
-		//	serieRef.current = chart.addCandlestickSeries()
+			serieRef.current = chart.addCandlestickSeries()
 			chartRef.current = chart
 		}
 		const hover = (event) => {
@@ -98,6 +101,7 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 	useEffect(() => {
 		// When data is updated
 		serieRef.current.setData(data)
+		console.log('hi2')
 		chartRef.current.timeScale().fitContent()
 	}, [data])
 

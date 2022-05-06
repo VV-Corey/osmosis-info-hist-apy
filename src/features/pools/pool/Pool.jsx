@@ -133,10 +133,12 @@ const Pool = () => {
 	const [rangePrice, setRangePrice] = useState("7d") // 7d, 1m, 1y, all
 	const [rangeVolume, setRangeVolume] = useState("d") // d, w, m
 	const [rangeLiquidity, setRangeLiquidity] = useState("d") // d, w, m
+	const [rangeAPR, setRangeAPR] = useState("7d") // 7d, 1m, 1y, all
 
 	const [currentDataPrice, setCurrentDataPrice] = useState([])
 	const [currentDataVolume, setCurrentDataVolume] = useState([])
 	const [currentDataLiquidity, setCurrentDataLiquidity] = useState([])
+	const [currentDataAPR, setCurrentDataAPR] = useState([])
 	const [currency, setCurrency] = useState({ before: true, value: "$" })
 
 	useEffect(() => {

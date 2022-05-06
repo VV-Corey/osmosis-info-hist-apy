@@ -266,6 +266,57 @@ export const PoolsV2Provider = ({ children }) => {
 		}
 	}, [])
 
+	const getAPRChartPool = useCallback(async ({ poolId, range = "d" }) => {
+		setLoadingPoolChart(true)
+		if (
+			saveDataChart.current[getName("apr", range, poolId)] &&
+			saveDataChart.current[getName("apr", range, poolId)].length > 0
+		) {
+			setLoadingPoolChart(false)
+			return saveDataChart.current[getName("apr", range, poolId)]
+		} else {
+			let response = await API.request({
+				url: `supply/v1/osmo`,
+				type: "get",
+			})
+			let data = response.data
+
+			let dataW = []
+			let currentWeek = { time: data[0].time, value: 0 }
+			let dataM = []
+			let currentMonth = { time: data[0].time, value: 0 }
+			data.forEach((item) => {
+				let currentDate = timeToDateUTC(item.time)
+				let dateMonth = timeToDateUTC(currentMonth.time)
+				if (currentDate.getMonth() === dateMonth.getMonth()) {
+					currentMonth.value = item.value
+				} else {
+					dataM.push(currentMonth)
+					currentMonth = { time: item.time, value: item.value }
+				}
+				let dateOfCurrentWeek = timeToDateUTC(currentWeek.time)
+				let numberOfWeek = getWeekNumber(currentDate)
+				let numberOfWeekOfCurrentWeek = getWeekNumber(dateOfCurrentWeek)
+				if (numberOfWeek === numberOfWeekOfCurrentWeek) {
+					currentWeek.value = item.value
+				} else {
+					dataW.push(currentWeek)
+					currentWeek = { time: item.time, value: item.value }
+				}
+			})
+			dataW.push(currentWeek)
+			dataM.push(currentMonth)
+
+			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "d", poolId)]: data }
+			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "w", poolId)]: dataW }
+			saveDataChart.current = { ...saveDataChart.current, [getName("apr", "m", poolId)]: dataM }
+			setLoadingPoolChart(false)
+			if (range === "d") return data
+			else if (range === "w") return dataW
+			else if (range === "m") return dataM
+		}
+	}, [])
+
 	const getVolumeChartPool = useCallback(async ({ poolId, range = "d" }) => {
 		setLoadingPoolChart(true)
 		if (
@@ -348,6 +399,7 @@ export const PoolsV2Provider = ({ children }) => {
 				getChartPool,
 				getVolumeChartPool,
 				getLiquidityChartPool,
+				getAPRChartPool,
 				getTrxPool,
 				loadingTrx,
 				allPools,

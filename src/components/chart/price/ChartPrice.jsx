@@ -100,7 +100,7 @@ const ChartPrice = ({ data, crossMove, onMouseLeave }) => {
 		serieRef.current.setData(data)
 		chartRef.current.timeScale().fitContent()
 	}, [data])
-
+	
 	return (
 		<div className={classes.chartContainer}>
 			<div onMouseLeave={onMouseLeave} className={classes.chart} ref={containerRef}></div>

@@ -32,12 +32,14 @@ const Charts = ({
 	dataPrice,
 	dataVolume,
 	dataLiquidity,
+	dataAPR,
 	crossMove,
 	onMouseLeave,
 	onClick,
 	rangePrice,
 	rangeVolume,
 	rangeLiquidity,
+	rangeAPR,
 }) => {
 	const classes = useStyles()
 
@@ -61,8 +63,10 @@ const Charts = ({
 			/>
 		)
 	}  else if (typeChart === "apr") {
+		//console.log(dataPrice)
+		console.log(dataAPR)
 		chartRender = (
-			<ChartPrice data={dataPrice} crossMove={crossMove} onMouseLeave={onMouseLeave} key={"ChartPrice" + rangePrice} />
+			<ChartAPR data={dataPrice} crossMove={crossMove} onMouseLeave={onMouseLeave} key={"ChartPrice" + rangePrice} />
 		)
 	}
 	else {

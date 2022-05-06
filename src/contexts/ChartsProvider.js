@@ -12,21 +12,26 @@ export const ChartsProvider = ({ children }) => {
 	const [dataVolumeD, setDataVolumeD] = useState([]) //useSessionStorage("dataVolume", []);
 	const [dataVolumeW, setDataVolumeW] = useState([]) //useSessionStorage("dataVolume", []);
 	const [dataVolumeM, setDataVolumeM] = useState([]) //useSessionStorage("dataVolume", []);
+	const [dataAPRD, setDataAPRD] = useState([]) //useSessionStorage("dataLiquidity", []);
+	const [dataAPRW, setDataAPRW] = useState([]) //useSessionStorage("dataLiquidity", []);
+	const [dataAPRM, setDataAPRM] = useState([]) //useSessionStorage("dataLiquidity", []);
 	const [loadingData, setLoadingData] = useState(false)
-
 	useEffect(() => {
 		let fetch = async () => {
 			// get all Charts from server API
 			let promises = [
 				API.request({ url: "liquidity/v2/historical/chart", type: "get" }),
 				API.request({ url: "volume/v2/historical/chart", type: "get" }),
+				API.request({ url: "liquidity/v2/historical/chart", type: "get" }), //change to appropriate API
 			]
 			let results = await Promise.all(promises)
 			let liquidity = results[0].data
 			let volume = results[1].data
+			let apr = results[2].data
 			setLoadingData(false)
 			setDataLiquidityD(liquidity)
 			setDataVolumeD(volume)
+			setDataAPRD(apr)
 
 			// Aggregate by week and month for volume
 			let volumeW = []
@@ -94,14 +99,58 @@ export const ChartsProvider = ({ children }) => {
 			liquidityM.push(currentMonth)
 			setDataLiquidityM(liquidityM)
 			setDataLiquidityW(liquidityW)
+
+			// Aggregate by week and month for APR, adjust for changed API before deploying
+
+			let aprW = []
+			currentWeek = { time: apr[0].time, value: 0, value_atom: 0, value_osmo: 0 }
+			let aprM = []
+			currentMonth = { time: apr[0].time, value: 0, value_atom: 0, value_osmo: 0 }
+			apr.forEach((item) => {
+				let currentDate = timeToDateUTC(item.time)
+				let dateMonth = timeToDateUTC(currentMonth.time)
+				if (currentDate.getMonth() === dateMonth.getMonth()) {
+					currentMonth.value = item.value
+					currentMonth.value_atom = item.value_atom
+					currentMonth.value_osmo = item.value_osmo
+				} else {
+					aprM.push(currentMonth)
+					currentMonth = {
+						time: item.time,
+						value: item.value,
+						value_atom: item.value_atom,
+						value_osmo: item.value_osmo,
+					}
+				}
+				let dateOfCurrentWeek = timeToDateUTC(currentWeek.time)
+				let numberOfWeek = getWeekNumber(currentDate)
+				let numberOfWeekOfCurrentWeek = getWeekNumber(dateOfCurrentWeek)
+				if (numberOfWeek === numberOfWeekOfCurrentWeek) {
+					currentWeek.value = item.value
+					currentWeek.value_atom = item.value_atom
+					currentWeek.value_osmo = item.value_osmo
+				} else {
+					aprW.push(currentWeek)
+					currentWeek = { time: item.time, value: item.value, value_atom: item.value_atom, value_osmo: item.value_osmo }
+				}
+			})
+			aprW.push(currentWeek)
+			aprM.push(currentMonth)
+			setDataAPRM(aprM)
+			setDataAPRW(aprW)
+			console.log(aprM)
+			console.log(liquidityM)
 		}
+
+
 		setLoadingData(true)
 		fetch()
+
 	}, [])
 
 	return (
 		<ChartsContext.Provider
-			value={{ dataLiquidityD, dataLiquidityW, dataLiquidityM, dataVolumeD, dataVolumeW, dataVolumeM, loadingData }}
+			value={{ dataLiquidityD, dataLiquidityW, dataLiquidityM, dataVolumeD, dataVolumeW, dataVolumeM, dataAPRD, dataAPRW, dataAPRM, loadingData }}
 		>
 			{children}
 		</ChartsContext.Provider>
