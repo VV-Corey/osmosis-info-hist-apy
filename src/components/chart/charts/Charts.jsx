@@ -1,6 +1,7 @@
 import ChartLiquidity from "../liquidity/ChartLiquidity"
 import ChartPrice from "../price/ChartPrice"
 import ChartVolume from "../volume/ChartVolume"
+import ChartAPR from "../apr/ChartAPR"
 import { makeStyles } from "@material-ui/core"
 import { CSSTransitionGroup } from "react-transition-group"
 
