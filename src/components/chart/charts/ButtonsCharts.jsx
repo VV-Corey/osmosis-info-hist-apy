@@ -27,7 +27,7 @@ const ButtonsCharts = ({
 	} else if (typeChart === "volume") {
 		return <ButtonsVolume onChangeRange={onChangeRangeVolume} range={rangeVolume} />
 	} else if (typeChart === "apr") {
-			return <ButtonsApr onChangeRange={onChangeRangePrice} range={rangePrice} />
+			return <ButtonsApr onChangeRange={onChangeRangeLiquidity} range={rangeLiquidity}  />
 	} else {
 		return <ButtonsLiquidity onChangeRange={onChangeRangeLiquidity} range={rangeLiquidity} />
 	}

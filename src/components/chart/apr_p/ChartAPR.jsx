@@ -1,9 +1,9 @@
 import { makeStyles, useMediaQuery } from "@material-ui/core"
 import { useEffect } from "react"
 import { useRef } from "react"
-import { createChart } from "lightweight-charts"
+import { createChart, CrosshairMode } from "lightweight-charts"
 import { ResizeObserver } from "resize-observer"
-import { formaterNumber } from "../../../helpers/helpers"
+import { float2Numbers, formateNumberDecimalsAutoV2 } from "../../../helpers/helpers"
 
 const useStyles = makeStyles((theme) => {
 	return {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => {
 			height: "100%",
 			width: "100%",
 		},
-		chartRoot: {
+		chart: {
 			position: "absolute",
 			top: "0",
 			right: "0",
@@ -48,46 +48,34 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 		}
 	}, [matchXS])
 
-
 	useEffect(() => {
 		// Initialization
 		if (chartRef.current === null) {
+			console.log("hi")
 			let chart = createChart(containerRef.current, {
-				rightPriceScale: {
-					scaleMargins: {
-						bottom: 0,
-					},
-				},
+				
 				layout: {
-					backgroundColor: "rgba(31, 33, 40,0)",
+					backgroundColor: "rgba(115, 33, 40,1)",
 					textColor: "#c3c5cb",
 					fontFamily: "'Inter'",
+					
 				},
 				localization: {
 					priceFormatter: (price) => {
-						return formaterNumber(price)
+						return formateNumberDecimalsAutoV2({ price: price })
 					},
 				},
 				grid: {
-					horzLines: {
+					vertLines: {
 						visible: false,
 					},
-					vertLines: {
+					horzLines: {
+						color: "rgba(42, 46, 57, 0.5)",
 						visible: false,
 					},
 				},
 				crosshair: {
-					horzLine: {
-						visible: false,
-						labelVisible: false,
-					},
-					vertLine: {
-						visible: true,
-						style: 0,
-						width: 2,
-						color: "rgba(32, 38, 46, 0.1)",
-						labelVisible: false,
-					},
+					mode: CrosshairMode.Normal,
 				},
 				timeScale: {
 					rightOffset: 1,
@@ -96,17 +84,12 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 				},
 			})
 
-			serieRef.current = chart.addAreaSeries({
-				topColor: "rgba(196, 164, 106, 0.4)",
-				bottomColor: "rgba(196, 164, 106, 0.0)",
-				lineColor: "rgba(251, 192, 45, 1)",
-				lineWidth: 3,
-			})
+		
+			serieRef.current = chart.addCandlestickSeries()
 			chartRef.current = chart
 		}
-
 		const hover = (event) => {
-			let item = {time: event.time, value: event.seriesPrices.get(serieRef.current)}
+			let item = { time: event.time, value: event.seriesPrices.get(serieRef.current) }
 			crossMove(item)
 		}
 		chartRef.current.subscribeCrosshairMove(hover)
@@ -118,12 +101,13 @@ const ChartAPR = ({ data, crossMove, onMouseLeave }) => {
 	useEffect(() => {
 		// When data is updated
 		serieRef.current.setData(data)
+		console.log('hi2')
 		chartRef.current.timeScale().fitContent()
 	}, [data])
 
 	return (
 		<div className={classes.chartContainer}>
-			<div onMouseLeave={onMouseLeave} className={classes.chartRoot} ref={containerRef} />
+			<div onMouseLeave={onMouseLeave} className={classes.chart} ref={containerRef}></div>
 		</div>
 	)
 }

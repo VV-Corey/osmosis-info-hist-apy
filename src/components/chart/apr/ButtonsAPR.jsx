@@ -14,40 +14,32 @@ const ButtonsAPR = ({ onChangeRange, range }) => {
 
 	return (
 		<ButtonGroup
-		className={classes.groupButton}
-		buttons={[
-			{
-				id: "7d",
-				name: "7D",
-				onClick: () => {
-					onChangeRange("7d")
+			className={classes.groupButton}
+			buttons={[
+				{
+					id: "d",
+					name: "D",
+					onClick: () => {
+						onChangeRange("d")
+					},
 				},
-			},
-
-			{
-				id: "1mo",
-				name: "1M",
-				onClick: () => {
-					onChangeRange("1mo")
+				{
+					id: "w",
+					name: "W",
+					onClick: () => {
+						onChangeRange("w")
+					},
 				},
-			},
-			{
-				id: "1y",
-				name: "1Y",
-				onClick: () => {
-					onChangeRange("1y")
+				{
+					id: "m",
+					name: "M",
+					onClick: () => {
+						onChangeRange("m")
+					},
 				},
-			},
-			{
-				id: "all",
-				name: "All",
-				onClick: () => {
-					onChangeRange("all")
-				},
-			},
-		]}
-		active={range}
-	/>
+			]}
+			active={range}
+		/>
 	)
 }
 

@@ -66,7 +66,12 @@ const Charts = ({
 		//console.log(dataPrice)
 		console.log(dataAPR)
 		chartRender = (
-			<ChartAPR data={dataPrice} crossMove={crossMove} onMouseLeave={onMouseLeave} key={"ChartPrice" + rangePrice} />
+			<ChartAPR
+				data={dataLiquidity}
+				crossMove={crossMove}
+				onMouseLeave={onMouseLeave}
+				key={"ChartLiquidity" + rangeLiquidity}
+			/>
 		)
 	}
 	else {

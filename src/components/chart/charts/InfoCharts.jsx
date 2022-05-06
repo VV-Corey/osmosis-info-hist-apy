@@ -9,7 +9,7 @@ const InfoCharts = ({ data, rangePrice, rangeVolume, rangeLiquidity, typeChart, 
 	} else if (typeChart === "volume") {
 		return <InfoVolume data={data} range={rangeVolume}/>
 	} else if (typeChart === "apr") {
-		return <InfoAPR data={data} range={rangePrice} currency={currency}/>
+		return <InfoAPR data={data} range={rangeLiquidity}/>
 	}
 	 else {
 		return <InfoLiquidity data={data} range={rangeLiquidity} />
